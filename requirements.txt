@@ -1,4 +1,5 @@
 pyrogram
 tgcrypto
-pytgcalls
+pytgcalls==0.9.1
+tgcalls==0.16
 spotipy
