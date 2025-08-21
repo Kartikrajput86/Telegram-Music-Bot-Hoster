@@ -1,1 +1,9 @@
-
+pyrogram==2.0.106
+TgCrypto==1.2.5
+py-tgcalls==0.9.7
+yt-dlp==2025.1.1
+pydantic==2.9.2
+python-dotenv==1.0.1
+aiohttp==3.10.5
+Pillow==10.4.0
+spotipy==2.24.0
