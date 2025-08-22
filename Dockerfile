@@ -1,12 +1,12 @@
-# Lightweight Python base image
+# Lightweight Python base
 FROM python:3.12-slim
 
-# Prevent interactive prompts during apt installs
+# Avoid interactive prompts during apt installs
 ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1
 
-# Install system dependencies for audio/streaming and building Python wheels
+# System deps for audio/streaming and building wheels
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
        ffmpeg \
@@ -16,23 +16,24 @@ RUN apt-get update \
        git \
     && rm -rf /var/lib/apt/lists/*
 
-# Set working directory
+# Create app dir
 WORKDIR /app
 
-# Install Python dependencies first (for better Docker layer caching)
+# Install Python deps first (better Docker layer caching)
 COPY telegram-music-bot/requirements.txt /app/requirements.txt
+
 RUN python -m pip install --upgrade pip \
     && pip install -r /app/requirements.txt
 
-# Copy bot source code
+# Copy the rest of the source
 COPY telegram-music-bot /app
 
-# Optional: run as non-root user for security
+# Optional: create non-root user (safer)
 RUN useradd -m botuser \
     && chown -R botuser:botuser /app
 USER botuser
 
-# Default environment variables (override via Docker run or docker-compose)
+# Default environment keys (override with real values in runtime)
 ENV API_ID=0 \
     API_HASH="" \
     BOT_TOKEN="" \
@@ -43,11 +44,11 @@ ENV API_ID=0 \
     SPOTIFY_CLIENT_ID="" \
     SPOTIFY_CLIENT_SECRET=""
 
-# Set working directory again for clarity
+# Working directory contains main.py
 WORKDIR /app
 
-# Healthcheck to ensure process is running
+# Healthcheck: ensure process is running (simple ping)
 HEALTHCHECK --interval=30s --timeout=5s --retries=3 CMD pgrep -f "python main.py" || exit 1
 
-# Start the bot
+# Run the bot
 CMD ["python", "main.py"]
